@@ -7,9 +7,11 @@
 #include <time.h>
 #include <cstdlib>
 
+
+//PRIMERO SE DEBE INGRESAR COMO ADMINISTRADOR PARA PODER REGISTRAR USUARIOS, LUEGO YA SE PUEDE INGRESAR CON CUALQUIER USUARIO REGISTRADO//
 //========================================================
 #define USER "ELI"//USUARIO ADMINISTRADOR!	//
-#define PASS "112471"//CONTRASEÑA MAESTRA!	//
+#define PASS "112471"//CONTRASEÃ‘A MAESTRA!	//
 //========================================================
 
 using namespace std; 
@@ -24,7 +26,7 @@ typedef struct{
 	char name[50], address[50], phone[50], fecha_n[50], email[50];
 	int client_id=0;
 }client; 
-//----ESTRUCTURA DE INFORMACIÓN DE PRODUCTO------------
+//----ESTRUCTURA DE INFORMACIÃ“N DE PRODUCTO------------
 typedef struct{
 	char description[100];
 	float price=0, cost=0;
@@ -124,7 +126,7 @@ void registrar_usuarios(){
 	printf("\n Ingrese Nombre de Usuario: ");
 	gets(usua.user_NAME);
 	fflush(stdin);
-	printf("\n Registre Contraseña del Usuario: ");
+	printf("\n Registre ContraseÃ±a del Usuario: ");
 	gets(usua.user_pass);
 	fflush(stdin);
 	
@@ -151,7 +153,7 @@ void consultar_usuarios(){
 		printf("\n Nombre y Apellido: %s",usua.user_name);
 		printf("\n ID del Usuario: %d",usua.user_id);
 		printf("\n Usuario: %s",usua.user_NAME);
-		printf("\n Contraseña del Usuario: %s",usua.user_pass);
+		printf("\n ContraseÃ±a del Usuario: %s",usua.user_pass);
 		printf("\n----------------------------------------------");
 		printf("\n");
         fread(&usua, sizeof(user_system), 1, arch);
@@ -185,13 +187,13 @@ void cambiar_password(){
            printf("\n Usuario: %s",usua.user_NAME);
 		   printf("\n Nombre y Apellido: %s",usua.user_name);
 	   	   printf("\n ID del Usuario: %d",usua.user_id);
-           printf("\n Ingrese nueva Contraseña: ");
+           printf("\n Ingrese nueva ContraseÃ±a: ");
            gets(usua.user_pass);
            fflush(stdin);
            int pos=ftell(arch)-sizeof(user_system);
            fseek(arch,pos,SEEK_SET);
            fwrite(&usua, sizeof(user_system), 1, arch);
-           printf("\n Contraseña Cambiada Exitosamente!");
+           printf("\n ContraseÃ±a Cambiada Exitosamente!");
            existe=1;
            break;
         }
@@ -220,13 +222,13 @@ void registrar_clientes(){
 	printf("\n Ingrese ID: ");
 	scanf("%d",&cl.client_id);
 	fflush(stdin);
-	printf("\n Teléfono: ");
+	printf("\n TelÃ©fono: ");
 	gets(cl.phone);
 	fflush(stdin);
 	printf("\n Correo: ");
 	gets(cl.email);
 	fflush(stdin);
-	printf("\n Dirección: ");
+	printf("\n DirecciÃ³n: ");
 	gets(cl.address);
 	fflush(stdin);
 	printf("\n Fecha de Nacimiento: ");
@@ -255,9 +257,9 @@ void consultar_clientes(){
     	printf("\n----------------------------------------------");
 		printf("\n Nombres y Apellidos: %s",cl.name);
 		printf("\n ID: %d",cl.client_id);
-		printf("\n Teléfono: %s",cl.phone);
+		printf("\n TelÃ©fono: %s",cl.phone);
 		printf("\n Correo: %s",cl.email);
-		printf("\n Dirección: %s",cl.address);
+		printf("\n DirecciÃ³n: %s",cl.address);
 		printf("\n Fecha de Nacimiento: %s",cl.fecha_n);
 		printf("\n----------------------------------------------");
 		printf("\n");
@@ -292,9 +294,9 @@ void buscar_por_id(){
 			printf("\n----------------------------------------------");
 			printf("\n Nombres y Apellidos: %s",cl.name);
 			printf("\n ID: %d",cl.client_id);
-			printf("\n Teléfono: %s",cl.phone);
+			printf("\n TelÃ©fono: %s",cl.phone);
 			printf("\n Correo: %s",cl.email);
-			printf("\n Dirección: %s",cl.address);
+			printf("\n DirecciÃ³n: %s",cl.address);
 			printf("\n Fecha de Nacimiento: %s",cl.fecha_n);
 			printf("\n----------------------------------------------");
            	existe=1;
@@ -334,7 +336,7 @@ void actualizar_datos(){
 			printf("\n----------------------------------------------");
 			printf("\n Continuar?");
 			printf("\n 1. SI\n 2.NO");
-			printf("\n Opción: ");
+			printf("\n OpciÃ³n: ");
 			scanf("%d",&si);
 			if(si==1){
 				system("cls");
@@ -344,13 +346,13 @@ void actualizar_datos(){
 				printf("\n Ingrese ID: ");
 				scanf("%d",&cl.client_id);
 				fflush(stdin);
-				printf("\n Teléfono: ");
+				printf("\n TelÃ©fono: ");
 				gets(cl.phone);
 				fflush(stdin);
 				printf("\n Correo: ");
 				gets(cl.email);
 				fflush(stdin);
-				printf("\n Dirección: ");
+				printf("\n DirecciÃ³n: ");
 				gets(cl.address);
 				fflush(stdin);
 				printf("\n Fecha de Nacimiento: ");
@@ -387,10 +389,10 @@ void registrar_productos(){
 		exit(1);
 		
     product pr;
-	printf("\n Código del Producto: ");
+	printf("\n CÃ³digo del Producto: ");
 	scanf("%d",&pr.code);
 	fflush(stdin);
-	printf("\n Descripición: ");
+	printf("\n DescripiciÃ³n: ");
 	gets(pr.description);
 	fflush(stdin);
 	printf("\n Cantidad: ");
@@ -419,7 +421,7 @@ void ingreso_stock(){
     int code=0, existe=0, ingreso=0;
 	float total=0, p_total=0;
 
-    printf("\n Código: ");
+    printf("\n CÃ³digo: ");
     fflush(stdin);
     scanf("%d",&code);
     product pr;
@@ -455,7 +457,7 @@ void ingreso_stock(){
            int pos=ftell(arch)-sizeof(product);
            fseek(arch,pos,SEEK_SET);
            fwrite(&pr, sizeof(product), 1, arch);
-           printf("\n Operación Realizada Exitosamente!");
+           printf("\n OperaciÃ³n Realizada Exitosamente!");
            existe=1;
            break;
         }
@@ -485,8 +487,8 @@ void lista_productos(){
 	   c_total=pr.cost*pr.stock;
        p_total=pr.price*pr.stock;
 	   printf("\n-------------------------------------------");
-	   printf("\n Descripción: %s",pr.description);
-	   printf("\n Código: %d",pr.code);
+	   printf("\n DescripciÃ³n: %s",pr.description);
+	   printf("\n CÃ³digo: %d",pr.code);
        printf("\n Stock:*************** %d",pr.stock);
 	   printf("\n Costo Unitario:***** $%.2f",pr.cost);
 	   printf("\n Precio Unitario:**** $%.2f",pr.price);
@@ -517,7 +519,7 @@ void consultar_productos(){
 
     int code=0, existe=0;
 
-    printf("\n Código: ");
+    printf("\n CÃ³digo: ");
     fflush(stdin);
     scanf("%d",&code);
     
@@ -528,8 +530,8 @@ void consultar_productos(){
         if (code==pr.code){
            fflush(stdin);
 		   printf("\n-------------------------------------------");
-		   printf("\n Descripción: %s",pr.description);
-		   printf("\n Código: %d",pr.code);
+		   printf("\n DescripciÃ³n: %s",pr.description);
+		   printf("\n CÃ³digo: %d",pr.code);
            printf("\n Stock:*************** %d",pr.stock);
 		   printf("\n Precio:************* $%.2f",pr.price);
 		   printf("\n-------------------------------------------");
@@ -554,7 +556,7 @@ void actualizar_precios(){
 
     int code=0, existe=0;
 
-    printf("Código: ");
+    printf("CÃ³digo: ");
     scanf("%d",&code);
     fflush(stdin);
     
@@ -565,8 +567,8 @@ void actualizar_precios(){
         if (code==pr.code){
            fflush(stdin);
            printf("\n-------------------------------------");
-           printf("\n Descripción: %s",pr.description);
-           printf("\n Código: %d",pr.code);
+           printf("\n DescripciÃ³n: %s",pr.description);
+           printf("\n CÃ³digo: %d",pr.code);
 		   printf("\n Precio:******** $%.2f",pr.price);
 		   printf("\n-------------------------------------");
            printf("\n Nuevo Precio: ");
@@ -588,52 +590,6 @@ void actualizar_precios(){
 	printf("\n");
     system("pause");
 }
-void borrar_productos(){
-    FILE *arch;
-    arch=fopen("base_de_datos//productos.dat","r+b");
-    if (arch==NULL)
-        exit(1);
-    printf("\n Código: ");
-    int cod, si;
-    scanf("%i", &cod);
-    product pr;
-    int existe=0;
-    fread(&pr, sizeof(product), 1, arch);
-    while(!feof(arch)){
-        if (cod==pr.code){
-           printf("\n-------------------------------------------");
-		   printf("\n Descripción: %s",pr.description);
-		   printf("\n Código: %d",pr.code);
-           printf("\n Stock:*************** %d",pr.stock);
-		   printf("\n Precio:************* $%.2f",pr.price);
-		   printf("\n-------------------------------------------");
-		   printf("\n");
-           printf("¿Está Seguro de Eliminar el Producto?");
-           printf("\n 1. SI\n 2. NO");
-           printf("\n Opción: ");
-           scanf("%d",&si);
-           if(si==1){
-	           int pos=ftell(arch)-sizeof(product);
-	           fseek(arch,pos,SEEK_SET);
-	           fwrite(&pr, sizeof(product), 1, arch);
-	           printf("\n Se ha borrado el Producto...");
-	           existe=1;
-	           break;
-		   }else{
-		   	printf("Proceso Cancelado!");
-		   	system("pause");
-		   	break;
-		   }
-           
-        }
-        fread(&pr, sizeof(product), 1, arch);
-    }
-    if (existe==0)
-        printf("Producto No Existe!");
-    fclose(arch);
-    printf("\n");
-    system("pause");
-}
 void cliente_factura(){
 	fflush(stdin);
 	int ID=0, existe=0;
@@ -643,14 +599,14 @@ void cliente_factura(){
     client cl;
     fread(&cl, sizeof(client), 1, arch);
     inicio:
-    printf("\n Cédula o RUC: "); scanf("%d",&ID);
+    printf("\n CÃ©dula o RUC: "); scanf("%d",&ID);
     lineas();
 	fflush(stdin);
 	while(!feof(arch)){
         if(ID==cl.client_id){
            lineas();
            printf("\n Nombre:   %s",cl.name);
-           printf("\n Teléfono: %s",cl.phone);
+           printf("\n TelÃ©fono: %s",cl.phone);
            existe=1;
            break;
         }
@@ -676,7 +632,7 @@ void producto_factura(){
     if (arch==NULL)
         exit(1);
 
-    printf("\n|Código: ");
+    printf("\n|CÃ³digo: ");
     fflush(stdin);
     scanf("%d",&code);
     product pr;
@@ -685,7 +641,7 @@ void producto_factura(){
     while(!feof(arch)){
         if (code==pr.code){
            	   fflush(stdin);
-			   printf("\n|Descripción: %.*s",15,pr.description);
+			   printf("\n|DescripciÃ³n: %.*s",15,pr.description);
 			   printf("|Cantidad: "); scanf("%i",cant_p);
 			   fflush(stdin);
 			   fread(&pr, sizeof(product), 1, arch);
@@ -695,7 +651,7 @@ void producto_factura(){
 				    p_total=(cant_p * pr.price);
 				    printf("|PrecioTotal: $%.2f|",p_total);
 			   }else{
-			   		printf("\n Artículo no disponible!");
+			   		printf("\n ArtÃ­culo no disponible!");
 			   }
 			   
 			   int pos=ftell(arch)-sizeof(product);
@@ -738,13 +694,13 @@ int main(int argc,char* argv[]){
 	
 //=============DECLARAR VARIABLES A USAR===========================================
 	int main_option=0, back_to_menu=0, num_users=0, num_clients=0, menu_adm_us=0;//--VARIABLES ENTERAS PARA SELECCIONADOR DE MENUS
-	int i=0, j=0, k=0, si;//-------------------------------------------------------------VARIABLES ENTERAS DE ITERACIÓN
+	int i=0, j=0, k=0, si;//-------------------------------------------------------------VARIABLES ENTERAS DE ITERACIÃ“N
 	int compP=1, compU=1;//-----------------------VARIABLES ENTERAS PARA VALIDAR CREDENCIALES
 	char validate_user[50], validate_pass[50];//----------------VARIABLES CHAR PARA INGRESAR CREDENCIALES
 	
 //===============INICIO DEL PROGRAMA========================================================================================================
 
-//==============INICIO DE SESIÓN PARA INGRESAR AL PROGRAMA=========================
+//==============INICIO DE SESIÃ“N PARA INGRESAR AL PROGRAMA=========================
 	init:
 	int wrong_pass, comp, comp2, validate=0;
 	do{
@@ -758,11 +714,11 @@ int main(int argc,char* argv[]){
 	    
 		system("cls");
 		fflush(stdin);
-		printf("\n ***INICIO DE SESIÓN*** ");
+		printf("\n ***INICIO DE SESIÃ“N*** ");
 		printf("\n Usuario: ");
 		gets(validate_user);
 		fflush(stdin);
-		printf("\n Contraseña: ");
+		printf("\n ContraseÃ±a: ");
 		asterisco(validate_pass);
 		fflush(stdin);
 		compU=strcmp(validate_user,USER);
@@ -792,7 +748,7 @@ int main(int argc,char* argv[]){
 			fclose(arch);
 		}if(wrong_pass!=0 || validate==0){
 			system("cls");
-			printf("\n Usuario y/o Contraseña Incorrecto!");
+			printf("\n Usuario y/o ContraseÃ±a Incorrecto!");
 			printf("\n");
 			system("pause");
 		}
@@ -808,14 +764,14 @@ int main(int argc,char* argv[]){
 	printf("\n 3. Administrar Clientes");
 	printf("\n 4. Ingresar al inventario");
 	printf("\n 5. Borrar Registros");
-	printf("\n 6. Cerrar Sesión");
+	printf("\n 6. Cerrar SesiÃ³n");
 	printf("\n 7. Salir");
 	printf("\n");
-	printf("\n Opción: ");
+	printf("\n OpciÃ³n: ");
 	scanf("%d",&main_option);
 	//strcpy(output);
 	if(main_option<=0 || main_option>7) {
-		printf("Opción Inválida!");
+		printf("OpciÃ³n InvÃ¡lida!");
 		system("pause");
 	}
 	switch(main_option){
@@ -836,7 +792,7 @@ int main(int argc,char* argv[]){
 		    printf("\n              ****TIENDA****");
 		    printf("\n               LA VENTURA");
 		    printf("\n             BABHOYO-ECUADOR");
-		    printf("\n            FACTURA N° %04d",fact.num_fact);
+		    printf("\n            FACTURA NÂ° %04d",fact.num_fact);
 		    printf("\n---------------------------------------------------");	
 			printf("\n Usuario: %s",user);
 			printf("%s",output);
@@ -859,9 +815,9 @@ int main(int argc,char* argv[]){
 			printf("\n ADMINISTRADOR DE USUARIOS");
 			printf("\n 1. Registrar Usuario");
 			printf("\n 2. Consultar Usuarios");
-			printf("\n 3. Cambiar Contraseña de Usuario");
-			printf("\n 4. Regresar al Menú Principal");
-			printf("\n Opción: ");
+			printf("\n 3. Cambiar ContraseÃ±a de Usuario");
+			printf("\n 4. Regresar al MenÃº Principal");
+			printf("\n OpciÃ³n: ");
 			scanf("%d",&i);
 			switch(i){
 				case 1: registrar_usuarios();
@@ -886,8 +842,8 @@ int main(int argc,char* argv[]){
 			printf("\n 2. Consultar Lista Total Clientes");
 			printf("\n 3. Buscar Cliente por ID");
 			printf("\n 4. Actualizar Datos");
-			printf("\n 5. Regresar al Menú Principal");
-			printf("\n Opción: ");
+			printf("\n 5. Regresar al MenÃº Principal");
+			printf("\n OpciÃ³n: ");
 			scanf("%d",&j);
 			switch(j){
 				case 1: registrar_clientes();
@@ -909,15 +865,14 @@ int main(int argc,char* argv[]){
 		case 4:
 			menu4:
 			system("cls");
-			printf("\n MENÚ DE INVENTARIO");
+			printf("\n MENÃš DE INVENTARIO");
 			printf("\n 1. Registrar Producto Nuevo");
 			printf("\n 2. Ingreso De Stock");
 			printf("\n 3. Consultar Lista de Productos");
-			printf("\n 4. Consultar Productos por Código");
+			printf("\n 4. Consultar Productos por CÃ³digo");
 			printf("\n 5. Actualizar Precio de Producto");
-			printf("\n 6. Eliminar Un Producto");
-			printf("\n 7. Regresar al Menú Principal");
-			printf("\n Opción: ");
+			printf("\n 6. Regresar al MenÃº Principal");
+			printf("\n OpciÃ³n: ");
 			scanf("%d",&k);
 			switch(k){
 				case 1: registrar_productos();
@@ -935,10 +890,7 @@ int main(int argc,char* argv[]){
 				case 5: actualizar_precios();
 						goto menu4;
 						break;
-				case 6: borrar_productos();
-						goto menu4;
-						break;
-				case 7: goto admin_menu;
+				case 6: goto admin_menu;
 						break;
 				default: goto menu4;
 			}
@@ -947,8 +899,8 @@ int main(int argc,char* argv[]){
 			do{
 				system("cls");
 				fflush(stdin);
-				printf("\n ***CONFIRMAR CONTRASEÑA*** ");
-				printf("\n Contraseña: ");
+				printf("\n ***CONFIRMAR CONTRASEÃ‘A*** ");
+				printf("\n ContraseÃ±a: ");
 				fflush(stdin);
 				asterisco(validate_pass);
 				compP=strcmp(validate_pass,PASS);
@@ -969,7 +921,7 @@ int main(int argc,char* argv[]){
 			printf("\n 1. Usuarios");
 			printf("\n 2. Clientes");
 			printf("\n 3. Inventario");
-			printf("\n 4. Regresar al Menú Principal");
+			printf("\n 4. Regresar al MenÃº Principal");
 			printf("\n Opcion: ");
 			scanf("%d",&i);
 			switch(i){
@@ -985,16 +937,16 @@ int main(int argc,char* argv[]){
 			}
 			system("pause");
 		case 6:
-			printf("Cerrando Sesión...\n");
+			printf("Cerrando SesiÃ³n...\n");
 			system("pause");
 			goto init;
 		case 7:
 			system("cls");
-			printf("\n ¿Realmente desea Salir del Programa?");
+			printf("\n Â¿Realmente desea Salir del Programa?");
 			printf("\n 1. SI");
 			printf("\n 2. NO");
 			do{
-				printf("\n Opción: ");
+				printf("\n OpciÃ³n: ");
 				scanf("%d",&si);
 				if(si==1){
 				printf("Saliendo del Programa...\n");
@@ -1004,7 +956,7 @@ int main(int argc,char* argv[]){
 					system("pause");
 					goto admin_menu;
 				}else{
-					printf("\n Opción Inválida!");
+					printf("\n OpciÃ³n InvÃ¡lida!");
 				}
 			}while(si>=1 && si<3);
 		default: goto admin_menu;
@@ -1017,7 +969,7 @@ int main(int argc,char* argv[]){
 	printf("\n 1. Sistema de Facturas");
 	printf("\n 2. Registrar Cliente");
 	printf("\n 3. Consultar Producto");
-	printf("\n 4. Cerrar Sesión");
+	printf("\n 4. Cerrar SesiÃ³n");
 	printf("\n 5. Salir");
 	printf("\n");
 	printf("\n Opcion: ");
@@ -1039,7 +991,7 @@ int main(int argc,char* argv[]){
 			    printf("\n              ****TIENDA****");
 			    printf("\n                LA VENTURA");
 			    printf("\n             BABHOYO-ECUADOR");
-			    printf("\n            FACTURA N° %04d",fact.num_fact);
+			    printf("\n            FACTURA NÂ° %04d",fact.num_fact);
 			    printf("\n---------------------------------------------------");	
 				printf("\n Usuario: %s",user);
 				printf("%s",output);
@@ -1065,16 +1017,16 @@ int main(int argc,char* argv[]){
 				system("pause");
 				goto user_menu;
 				break;
-		case 4:printf("Cerrando Sesión...\n");
+		case 4:printf("Cerrando SesiÃ³n...\n");
 				system("pause");
 				goto init;
 		case 5:
 			system("cls");
-			printf("\n ¿Realmente desea Salir del Programa?");
+			printf("\n Â¿Realmente desea Salir del Programa?");
 			printf("\n 1. SI");
 			printf("\n 2. NO");
 			do{
-				printf("\n Opción: ");
+				printf("\n OpciÃ³n: ");
 				scanf("%d",&si);
 				if(si==1){
 				printf("Saliendo del Programa...\n");
@@ -1084,7 +1036,7 @@ int main(int argc,char* argv[]){
 					system("pause");
 					goto user_menu;
 				}else{
-					printf("\n Opción Inválida!");
+					printf("\n OpciÃ³n InvÃ¡lida!");
 				}
 			}while(si>=1 && si<3);
 		default: goto user_menu;
