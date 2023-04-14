@@ -6,37 +6,29 @@
 #include <string.h>
 #include <time.h>
 #include <cstdlib>
+#include <io.h>
 
-
-//PRIMERO SE DEBE INGRESAR COMO ADMINISTRADOR PARA PODER REGISTRAR USUARIOS, LUEGO YA SE PUEDE INGRESAR CON CUALQUIER USUARIO REGISTRADO//
 //========================================================
-#define USER "ELI"//USUARIO ADMINISTRADOR!	//
-#define PASS "112471"//CONTRASE√ëA MAESTRA!	//
+//Credenciales de administrador
+#define USER "ADMIN"
+#define PASS "123"
 //========================================================
 
 using namespace std; 
 //================ESTRUCTURAS=================================================
+
 //----ESTRUCTURA DE DATOS DE USUSARIO------------------
 typedef struct{
 	char user_name[50], user_NAME[50], user_pass[50];
 	int user_id;
 }user_system;
-//----ESTRUCTURA DE DATOS DE CLIENTE-------------------
-typedef struct{
-	char name[50], address[50], phone[50], fecha_n[50], email[50];
-	int client_id=0;
-}client; 
-//----ESTRUCTURA DE INFORMACI√ìN DE PRODUCTO------------
+//----ESTRUCTURA DE INFORMACI”N DE PRODUCTO------------
 typedef struct{
 	char description[100];
 	float price=0, cost=0;
 	int code=0,stock=0;
 }product;
-//----ESTRUCTURA DE DATOS DE FACTURA-------------------
-typedef struct{
-	int num_fact=0, id_user=0, id_client=0;
-	char date[50], compras[];
-}factura;
+
 //============FUNCIONES=======================================================
 void lineas(){
 	printf("\n---------------------------------------------------");
@@ -66,47 +58,56 @@ void asterisco(char frase[]){
     cout << endl;
     fflush(stdin);
 } 
-void crear_facturas(){
+void validar_base_de_datos(){
     FILE *arch;
-    arch=fopen("base_de_datos//facuras.dat","wb");
-    if (arch==NULL)
-		exit(1);
-	//printf("\n Borrado Exitoso...");
-	printf("\n");
-	system("pause");
-    fclose(arch);
+    int existencia;
+
+    // Verificar archivo de usuarios
+    existencia = access("base_de_datos//usuarios.dat", F_OK);
+    if (existencia == -1) {
+        arch = fopen("base_de_datos//usuarios.dat", "wb");
+        if (arch == NULL) {
+            printf("Error al crear archivo de usuarios.\n");
+            exit(1);
+        } else {
+            fclose(arch);
+        }
+    }
+
+    // Verificar archivo de productos
+    existencia = access("base_de_datos//productos.dat", F_OK);
+    if (existencia == -1) {
+        arch = fopen("base_de_datos//productos.dat", "wb");
+        if (arch == NULL) {
+            printf("Error al crear archivo de productos.\n");
+            exit(1);
+        } else {
+            fclose(arch);
+        }
+    }
 }
-void crear_usuarios(){
+
+int autenticar_usuario(char *usuario, char *contrasenia) {
     FILE *arch;
-    arch=fopen("base_de_datos//usuarios.dat","wb");
-    if (arch==NULL)
-		exit(1);
-	printf("\n Borrado Exitoso...");
-	printf("\n");
-	system("pause");
+    user_system usua;
+    int encontrado = 0;
+
+    arch = fopen("base_de_datos//usuarios.dat", "rb");
+    if (arch == NULL) {
+        exit(1);
+    }
+
+    while (fread(&usua, sizeof(user_system), 1, arch) == 1) {
+        if (strcmp(usuario, usua.user_NAME) == 0 && strcmp(contrasenia, usua.user_pass) == 0) {
+            encontrado = 1;
+            break;
+        }
+    }
+
     fclose(arch);
-    
+    return encontrado;
 }
-void crear_clientes(){
-    FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","wb");
-    if (arch==NULL)
-		exit(1);
-	printf("\n Borrado Exitoso...");
-	printf("\n");
-	system("pause");
-    fclose(arch);
-}
-void crear_productos(){
-    FILE *arch;
-    arch=fopen("base_de_datos//productos.dat","wb");
-    if (arch==NULL)
-		exit(1);
-	printf("\n Borrado Exitoso...");
-	printf("\n");
-	system("pause");
-    fclose(arch);
-}
+
 void registrar_usuarios(){
 	system("cls");
     FILE *arch;
@@ -187,13 +188,13 @@ void cambiar_password(){
            printf("\n Usuario: %s",usua.user_NAME);
 		   printf("\n Nombre y Apellido: %s",usua.user_name);
 	   	   printf("\n ID del Usuario: %d",usua.user_id);
-           printf("\n Ingrese nueva Contrase√±a: ");
+           printf("\n Ingrese nueva ContraseÒa: ");
            gets(usua.user_pass);
            fflush(stdin);
            int pos=ftell(arch)-sizeof(user_system);
            fseek(arch,pos,SEEK_SET);
            fwrite(&usua, sizeof(user_system), 1, arch);
-           printf("\n Contrase√±a Cambiada Exitosamente!");
+           printf("\n ContraseÒa Cambiada Exitosamente!");
            existe=1;
            break;
         }
@@ -206,203 +207,67 @@ void cambiar_password(){
 	printf("\n");
     system("pause");
 }
-void registrar_clientes(){
-	fflush(stdin);
-	system("cls");
-    FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","ab");
 
-    if (arch==NULL)
-		exit(1);
-		
-    client cl;
-	printf("\n Nombres y Apellidos: ");
-	gets(cl.name);
-	fflush(stdin);
-	printf("\n Ingrese ID: ");
-	scanf("%d",&cl.client_id);
-	fflush(stdin);
-	printf("\n Tel√©fono: ");
-	gets(cl.phone);
-	fflush(stdin);
-	printf("\n Correo: ");
-	gets(cl.email);
-	fflush(stdin);
-	printf("\n Direcci√≥n: ");
-	gets(cl.address);
-	fflush(stdin);
-	printf("\n Fecha de Nacimiento: ");
-	gets(cl.fecha_n);
-	fflush(stdin);
-	
-    fwrite(&cl, sizeof(client), 1, arch);
+void eliminar_usuario() {
+    system("cls");
+    FILE *arch;
+    FILE *temp;
+    arch = fopen("base_de_datos//usuarios.dat", "rb");
+    temp = fopen("base_de_datos//temp.dat", "wb");
+    if (arch == NULL || temp == NULL) {
+        printf("\nError al abrir archivo!");
+        exit(1);
+    }
+    int ID, existe = 0;
+    printf("Ingrese el ID del Usuario que desea eliminar: ");
+    fflush(stdin);
+    scanf("%d", &ID);
+    user_system usua;
+    fread(&usua, sizeof(user_system), 1, arch);
+    while (!feof(arch)) {
+        if (ID == usua.user_id) {
+            existe = 1;
+            printf("\nUsuario eliminado: %s", usua.user_NAME);
+        } else {
+            fwrite(&usua, sizeof(user_system), 1, temp);
+        }
+        fread(&usua, sizeof(user_system), 1, arch);
+    }
+    if (existe == 0) {
+        printf("\nNo existe Usuario!");
+    }
     fclose(arch);
+    fclose(temp);
+    remove("base_de_datos//usuarios.dat");
+    rename("base_de_datos//temp.dat", "base_de_datos//usuarios.dat");
     printf("\n");
     system("pause");
 }
-void consultar_clientes(){
-	int c=1;
-    FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","rb");
 
-    if (arch==NULL)
-		exit(1);
 
-    client cl;
-    
-    fread(&cl, sizeof(client), 1, arch);
-    	system("cls");
-    while(!feof(arch)){
-    	printf("\t\tCLIENTE #%d",c);
-    	printf("\n----------------------------------------------");
-		printf("\n Nombres y Apellidos: %s",cl.name);
-		printf("\n ID: %d",cl.client_id);
-		printf("\n Tel√©fono: %s",cl.phone);
-		printf("\n Correo: %s",cl.email);
-		printf("\n Direcci√≥n: %s",cl.address);
-		printf("\n Fecha de Nacimiento: %s",cl.fecha_n);
-		printf("\n----------------------------------------------");
-		printf("\n");
-        fread(&cl, sizeof(client), 1, arch);
-        c++;
-    }
-	    
-    fclose(arch);
-	printf("\n");
-    system("pause");
-}
-void buscar_por_id(){
-	system("cls");
-    FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","r+b");
-
-    if (arch==NULL)
-        exit(1);
-
-    int ID, existe=0;
-
-    printf("Ingrese el ID:");
-    fflush(stdin);
-    scanf("%d",&ID);
-    
-    client cl;
-    fread(&cl, sizeof(client), 1, arch);
-    
-    while(!feof(arch)){
-        if (ID==cl.client_id){
-            fflush(stdin);
-			printf("\n----------------------------------------------");
-			printf("\n Nombres y Apellidos: %s",cl.name);
-			printf("\n ID: %d",cl.client_id);
-			printf("\n Tel√©fono: %s",cl.phone);
-			printf("\n Correo: %s",cl.email);
-			printf("\n Direcci√≥n: %s",cl.address);
-			printf("\n Fecha de Nacimiento: %s",cl.fecha_n);
-			printf("\n----------------------------------------------");
-           	existe=1;
-           break;
-        }
-        fread(&cl, sizeof(client), 1, arch);
-    }
-    if (existe==0)
-        printf("Cliente No Registrado!");
-    fclose(arch);
-	printf("\n");
-    system("pause");
-}
-void actualizar_datos(){
-	system("cls");
-    FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","r+b");
-
-    if (arch==NULL)
-        exit(1);
-
-    int ID, existe=0, si=0;
-
-    printf("Ingrese el ID: ");
-    fflush(stdin);
-    scanf("%d",&ID);
-    
-    client cl;
-    fread(&cl, sizeof(client), 1, arch);
-    
-    while(!feof(arch)){
-        if (ID==cl.client_id){
-           fflush(stdin);
-           	printf("\n----------------------------------------------");
-			printf("\n Nombres y Apellidos: %s",cl.name);
-			printf("\n ID: %d",cl.client_id);
-			printf("\n----------------------------------------------");
-			printf("\n Continuar?");
-			printf("\n 1. SI\n 2.NO");
-			printf("\n Opci√≥n: ");
-			scanf("%d",&si);
-			if(si==1){
-				system("cls");
-		       	printf("\n Nombres y Apellidos: ");
-				gets(cl.name);
-				fflush(stdin);
-				printf("\n Ingrese ID: ");
-				scanf("%d",&cl.client_id);
-				fflush(stdin);
-				printf("\n Tel√©fono: ");
-				gets(cl.phone);
-				fflush(stdin);
-				printf("\n Correo: ");
-				gets(cl.email);
-				fflush(stdin);
-				printf("\n Direcci√≥n: ");
-				gets(cl.address);
-				fflush(stdin);
-				printf("\n Fecha de Nacimiento: ");
-				gets(cl.fecha_n);
-				fflush(stdin);
-		
-		       	int pos=ftell(arch)-sizeof(client);
-		       	fseek(arch,pos,SEEK_SET);
-		       	fwrite(&cl, sizeof(client), 1, arch);
-		       	printf("\n");
-		       	printf("\n Datos Actualizados Exitosamente!");
-		       	existe=1;
-		       	break;
-			}else if(si==2){
-				break;
-			}
-			
-        }
-        fread(&cl, sizeof(client), 1, arch);
-    }
-    if (existe==0)
-        printf("No existe Usuario!");
-        
-    fclose(arch);
-	printf("\n");
-    system("pause");
-}
 void registrar_productos(){
 	system("cls");
     FILE *arch;
-    arch=fopen("base_de_datos//productos.dat","r+b");
+    arch=fopen("base_de_datos//productos.dat","a+b");
 
     if (arch==NULL)
 		exit(1);
 		
     product pr;
-	printf("\n C√≥digo del Producto: ");
+	printf("\n CÛdigo del Producto: ");
 	scanf("%d",&pr.code);
 	fflush(stdin);
-	printf("\n Descripici√≥n: ");
+	printf("\n DescripciÛn: ");
 	gets(pr.description);
 	fflush(stdin);
 	printf("\n Cantidad: ");
 	scanf("%d",&pr.stock);
 	fflush(stdin);
 	printf("\n Costo del Producto por Unidad: ");
-	cin>>pr.cost;
+	scanf("%f", &pr.cost);
 	fflush(stdin);
 	printf("\n Precio del Producto por Unidad: ");
-	cin>>pr.price;
+	scanf("%f", &pr.price);
 	fflush(stdin);
 	
     fwrite(&pr, sizeof(product), 1, arch);
@@ -421,7 +286,7 @@ void ingreso_stock(){
     int code=0, existe=0, ingreso=0;
 	float total=0, p_total=0;
 
-    printf("\n C√≥digo: ");
+    printf("\n CÛdigo de Producto: ");
     fflush(stdin);
     scanf("%d",&code);
     product pr;
@@ -482,13 +347,14 @@ void lista_productos(){
     
     fread(&pr, sizeof(product), 1, arch);
     	system("cls"); 	
+    
 	while(!feof(arch)){
 	   c_total=0,p_total=0;
 	   c_total=pr.cost*pr.stock;
        p_total=pr.price*pr.stock;
 	   printf("\n-------------------------------------------");
-	   printf("\n Descripci√≥n: %s",pr.description);
-	   printf("\n C√≥digo: %d",pr.code);
+	   printf("\n DescripciÛn: %s",pr.description);
+	   printf("\n CÛdigo: %d",pr.code);
        printf("\n Stock:*************** %d",pr.stock);
 	   printf("\n Costo Unitario:***** $%.2f",pr.cost);
 	   printf("\n Precio Unitario:**** $%.2f",pr.price);
@@ -519,7 +385,7 @@ void consultar_productos(){
 
     int code=0, existe=0;
 
-    printf("\n C√≥digo: ");
+    printf("\n CÛdigo de Producto: ");
     fflush(stdin);
     scanf("%d",&code);
     
@@ -530,8 +396,8 @@ void consultar_productos(){
         if (code==pr.code){
            fflush(stdin);
 		   printf("\n-------------------------------------------");
-		   printf("\n Descripci√≥n: %s",pr.description);
-		   printf("\n C√≥digo: %d",pr.code);
+		   printf("\n DescripciÛn: %s",pr.description);
+		   printf("\n CÛdigo: %d",pr.code);
            printf("\n Stock:*************** %d",pr.stock);
 		   printf("\n Precio:************* $%.2f",pr.price);
 		   printf("\n-------------------------------------------");
@@ -556,7 +422,7 @@ void actualizar_precios(){
 
     int code=0, existe=0;
 
-    printf("C√≥digo: ");
+    printf("CÛdigo de Producto: ");
     scanf("%d",&code);
     fflush(stdin);
     
@@ -567,8 +433,8 @@ void actualizar_precios(){
         if (code==pr.code){
            fflush(stdin);
            printf("\n-------------------------------------");
-           printf("\n Descripci√≥n: %s",pr.description);
-           printf("\n C√≥digo: %d",pr.code);
+           printf("\n DescripciÛn: %s",pr.description);
+           printf("\n CÛdigo: %d",pr.code);
 		   printf("\n Precio:******** $%.2f",pr.price);
 		   printf("\n-------------------------------------");
            printf("\n Nuevo Precio: ");
@@ -590,363 +456,152 @@ void actualizar_precios(){
 	printf("\n");
     system("pause");
 }
-void cliente_factura(){
-	fflush(stdin);
-	int ID=0, existe=0;
-	FILE *arch;
-    arch=fopen("base_de_datos//clientes.dat","r+b");
-    
-    client cl;
-    fread(&cl, sizeof(client), 1, arch);
-    inicio:
-    printf("\n C√©dula o RUC: "); scanf("%d",&ID);
-    lineas();
-	fflush(stdin);
-	while(!feof(arch)){
-        if(ID==cl.client_id){
-           lineas();
-           printf("\n Nombre:   %s",cl.name);
-           printf("\n Tel√©fono: %s",cl.phone);
-           existe=1;
-           break;
-        }
-			fread(&cl, sizeof(client), 1, arch);
-	}
-	if (existe==0){
-	 	   printf("Cliente No Registrado!");
-		   system("pause");
-		   registrar_clientes();
-		   goto inicio;		
-	}   
-    
-    fclose(arch);
-}
-void producto_factura(){
-	float p_total=0, sub_total=0, iva=0, total=0;
-	int codigo=0, cant_p, code_f=0;
-	int code=0, existe=0, ingreso=0;
-	
-    FILE *arch;
-    arch=fopen("base_de_datos//productos.dat","r+b");
 
-    if (arch==NULL)
-        exit(1);
-
-    printf("\n|C√≥digo: ");
-    fflush(stdin);
-    scanf("%d",&code);
-    product pr;
-    fread(&pr, sizeof(product), 1, arch);
-    
-    while(!feof(arch)){
-        if (code==pr.code){
-           	   fflush(stdin);
-			   printf("\n|Descripci√≥n: %.*s",15,pr.description);
-			   printf("|Cantidad: "); scanf("%i",cant_p);
-			   fflush(stdin);
-			   fread(&pr, sizeof(product), 1, arch);
-			   if(cant_p<pr.stock){
-			   		pr.stock=(pr.stock - cant_p);
-					printf("|PrecioUnit:  $%.2f",pr.price);
-				    p_total=(cant_p * pr.price);
-				    printf("|PrecioTotal: $%.2f|",p_total);
-			   }else{
-			   		printf("\n Art√≠culo no disponible!");
-			   }
-			   
-			   int pos=ftell(arch)-sizeof(product);
-		       fseek(arch,pos,SEEK_SET);
-		       fwrite(&pr, sizeof(product), 1, arch);
-		       sub_total=sub_total+p_total;
-			   lineas();
-			   existe=1;
-			   break;
-		   
-        }
-        fread(&pr, sizeof(product), 1, arch);
-    }
-    if(existe==0 || codigo!=pr.code){
-	printf("\n Cancelando Proceso de Factura...");
-	printf("\n");
-	system("pause");
-	}
-	printf("\n Sub Total******************************* $%.2f",sub_total);
-	iva=sub_total*0.12;
-	total=iva+sub_total;
-	printf("\n I.V.A (12%%)**************************** $%.2f",iva);
-	printf("\n Total a Pagar*************************** $%.2f",total);
-        
-    fclose(arch);
-}
-
-//LPTM!!!! SON MUCHAS FUNCIONES Y AUN FALTAN! :c
-//=============================================================================
-
-
-//====================================================================================================================================
+//===============INICIO DEL PROGRAMA========================================================================================================
 int main(int argc,char* argv[]){
 	setlocale(LC_ALL,"spanish");
 	
-	time_t tiempo = time(0);
-    struct tm *tlocal = localtime(&tiempo);
-    char output[128];
-	strftime(output,128,"\n Fecha:   %d/%m/%y \n Hora:    %H:%M:%S",tlocal);
-	
 //=============DECLARAR VARIABLES A USAR===========================================
 	int main_option=0, back_to_menu=0, num_users=0, num_clients=0, menu_adm_us=0;//--VARIABLES ENTERAS PARA SELECCIONADOR DE MENUS
-	int i=0, j=0, k=0, si;//-------------------------------------------------------------VARIABLES ENTERAS DE ITERACI√ìN
+	int i=0, j=0, k=0, si;//-------------------------------------------------------------VARIABLES ENTERAS DE ITERACI”N
 	int compP=1, compU=1;//-----------------------VARIABLES ENTERAS PARA VALIDAR CREDENCIALES
 	char validate_user[50], validate_pass[50];//----------------VARIABLES CHAR PARA INGRESAR CREDENCIALES
 	
-//===============INICIO DEL PROGRAMA========================================================================================================
-
-//==============INICIO DE SESI√ìN PARA INGRESAR AL PROGRAMA=========================
+//==============INICIO DE SESI”N PARA INGRESAR AL PROGRAMA=========================
 	init:
-	int wrong_pass, comp, comp2, validate=0;
+	validar_base_de_datos();
+	int validate=0, menu=0;
+	
 	do{
-		fflush(stdin);
-		FILE *arch;
-    	arch=fopen("base_de_datos//usuarios.dat","rb");
-    	if (arch==NULL)
-			exit(1);
-			
-	    user_system usua;
-	    
+		validate=0;
 		system("cls");
 		fflush(stdin);
-		printf("\n ***INICIO DE SESI√ìN*** ");
+		printf("\n ***INICIO DE SESI”N*** ");
 		printf("\n Usuario: ");
 		gets(validate_user);
 		fflush(stdin);
-		printf("\n Contrase√±a: ");
+		printf("\n ContraseÒa: ");
 		asterisco(validate_pass);
 		fflush(stdin);
-		compU=strcmp(validate_user,USER);
-		compP=strcmp(validate_pass,PASS);
-    	comp =strcmp(validate_pass,usua.user_pass);
-    	comp2=strcmp(validate_user,usua.user_NAME);
-    	fread(&usua, sizeof(user_system), 1, arch);
-    	while(!feof(arch)){
-        	if(comp==0 && comp2==0){
-				validate=1;
-        	}
-        fread(&usua, sizeof(user_system), 1, arch);
-    	}
-    	wrong_pass=compU+compP;
-		if(compU==0 && compP==0){
-			printf("\n****Bienvenido Administrador/a**** ");
-			printf("\n");
-			printf("\n");
-			system("pause");
-			goto admin_menu;
-		}else if(validate==1){
-			printf("\n****Bienvenido(a) Sr(a): %s****",usua.user_name);
-			printf("\n");
-			printf("\n");
-			system("pause");
-			goto user_menu;
-			fclose(arch);
-		}if(wrong_pass!=0 || validate==0){
-			system("cls");
-			printf("\n Usuario y/o Contrase√±a Incorrecto!");
-			printf("\n");
-			system("pause");
+		printf("\n");
+
+		if (strcmp(validate_user, USER) == 0 && strcmp(validate_pass, PASS) == 0) {
+		    printf("\n****Bienvenido Administrador/a**** ");
+		    printf("\n\n");
+		    system("pause");
+		    validate =1;
+		    menu = 1;
+		} else if (autenticar_usuario(validate_user, validate_pass)) {
+		    printf("\n****Bienvenido Usuario****");
+		    printf("\n\n");
+		    system("pause");
+		    validate=1;
+		    menu = 2;
+		} else {
+		    printf("\n Usuario y/o ContraseÒa Incorrecto!");
+		    printf("\n\n");
+		    system("pause");
 		}
-	}while(wrong_pass!=0 || validate==0);
+	} while ( validate == 0);
+	
+//==========IR A LOS MENUS CORRESPONDIENTES================
+	if(menu == 1){
+		goto admin_menu;
+	}
+	if(menu == 2){
+		goto user_menu;
+	}
+	
 //=============MENU DEL ADMINISTRADOR========================================================================================================
 	admin_menu:
 	char user[50];
 	strcpy(user,validate_user);
 	system("cls");
 	printf("\n Bienvenido!");
-	printf("\n 1. Sistema de Facturas");
-	printf("\n 2. Administrar Usuarios");
-	printf("\n 3. Administrar Clientes");
-	printf("\n 4. Ingresar al inventario");
-	printf("\n 5. Borrar Registros");
-	printf("\n 6. Cerrar Sesi√≥n");
-	printf("\n 7. Salir");
+	printf("\n 1. Administrar Usuarios");
+	printf("\n 2. Ingresar al inventario");
+	printf("\n 3. Cerrar SesiÛn");
+	printf("\n 4. Salir");
 	printf("\n");
-	printf("\n Opci√≥n: ");
+	printf("\n OpciÛn: ");
 	scanf("%d",&main_option);
-	//strcpy(output);
-	if(main_option<=0 || main_option>7) {
-		printf("Opci√≥n Inv√°lida!");
+	
+	if(main_option<=0 || main_option>4) {
+		printf("OpciÛn Inv·lida!");
 		system("pause");
 	}
 	switch(main_option){
-		case 1:{
+		case 1:
 			menu1:
-			system("cls");
-		    FILE *arch;
-		    arch=fopen("base_de_datos//facturas.dat","wb");
-		    
-		    factura fact;
-		    
-		    if (arch==NULL)
-				exit(1);
-			fwrite(&fact, sizeof(factura), 1, arch);
-				
-		    fact.num_fact=fact.num_fact+1;
-		    printf("\n---------------------------------------------------");
-		    printf("\n              ****TIENDA****");
-		    printf("\n               LA VENTURA");
-		    printf("\n             BABHOYO-ECUADOR");
-		    printf("\n            FACTURA N¬∞ %04d",fact.num_fact);
-		    printf("\n---------------------------------------------------");	
-			printf("\n Usuario: %s",user);
-			printf("%s",output);
-		    printf("\n---------------------------------------------------");
-		   	cliente_factura();
-			printf("\n---------------------------------------------------");
-			producto_factura();
-			printf("\n---------------------------------------------------");
-			printf("\n             Muchas Gracias Por Su Compra");
-			printf("\n                   Vuelva Pronto");
-			printf("\n---------------------------------------------------");
-			printf("\n                    ELIAS CANDO");
-			printf("\n                       2021");
-			fclose(arch);
-			goto admin_menu;
-		}
-		case 2:
-			menu2:
 			system("cls");
 			printf("\n ADMINISTRADOR DE USUARIOS");
 			printf("\n 1. Registrar Usuario");
 			printf("\n 2. Consultar Usuarios");
-			printf("\n 3. Cambiar Contrase√±a de Usuario");
-			printf("\n 4. Regresar al Men√∫ Principal");
-			printf("\n Opci√≥n: ");
+			printf("\n 3. Cambiar ContraseÒa de Usuario");
+			printf("\n 4. Eliminar Usuario");
+			printf("\n 5. Regresar al Men˙ Principal");
+			printf("\n OpciÛn: ");
 			scanf("%d",&i);
 			switch(i){
 				case 1: registrar_usuarios();
-						goto menu2;
+						goto menu1;
 						break;
 				case 2: consultar_usuarios();
-						goto menu2;
+						goto menu1;
 						break;
 				case 3: cambiar_password();
-						goto menu2;
+						goto menu1;
 						break;
-				case 4: goto admin_menu;
-						break;
-				default: goto menu2;
-			}
-			
-		case 3:
-			menu3:
-			system("cls");
-			printf("\n ADMINISTRADOR DE CLIENTES");
-			printf("\n 1. Registrar Cliente");
-			printf("\n 2. Consultar Lista Total Clientes");
-			printf("\n 3. Buscar Cliente por ID");
-			printf("\n 4. Actualizar Datos");
-			printf("\n 5. Regresar al Men√∫ Principal");
-			printf("\n Opci√≥n: ");
-			scanf("%d",&j);
-			switch(j){
-				case 1: registrar_clientes();
-						goto menu3;
-						break;
-				case 2: consultar_clientes();
-						goto menu3;
-						break;
-				case 3: buscar_por_id();
-						goto menu3;
-						break;
-				case 4: actualizar_datos();
-						goto admin_menu;
-						break;
+				case 4:  eliminar_usuario();
+						goto menu1;
 				case 5: goto admin_menu;
 						break;
-				default: goto menu3;
-			}
-		case 4:
-			menu4:
+				default: goto menu1;
+			}	
+		case 2:
+			menu2:
 			system("cls");
-			printf("\n MEN√ö DE INVENTARIO");
+			printf("\n MEN⁄ DE INVENTARIO");
 			printf("\n 1. Registrar Producto Nuevo");
 			printf("\n 2. Ingreso De Stock");
 			printf("\n 3. Consultar Lista de Productos");
-			printf("\n 4. Consultar Productos por C√≥digo");
+			printf("\n 4. Consultar Productos por CÛdigo");
 			printf("\n 5. Actualizar Precio de Producto");
-			printf("\n 6. Regresar al Men√∫ Principal");
-			printf("\n Opci√≥n: ");
+			printf("\n 6. Regresar al Men˙ Principal");
+			printf("\n OpciÛn: ");
 			scanf("%d",&k);
 			switch(k){
 				case 1: registrar_productos();
-						goto menu4;
+						goto menu2;
 						break;
 				case 2: ingreso_stock();
-						goto menu4;
+						goto menu2;
 						break;
 				case 3: lista_productos();
-						goto menu4;
+						goto menu2;
 						break;
 				case 4: consultar_productos();
-						goto menu4;
+						goto menu2;
 						break;
 				case 5: actualizar_precios();
-						goto menu4;
+						goto menu2;
 						break;
 				case 6: goto admin_menu;
 						break;
-				default: goto menu4;
+				default: goto menu2;
 			}
 			goto admin_menu;
-		case 5:
-			do{
-				system("cls");
-				fflush(stdin);
-				printf("\n ***CONFIRMAR CONTRASE√ëA*** ");
-				printf("\n Contrase√±a: ");
-				fflush(stdin);
-				asterisco(validate_pass);
-				compP=strcmp(validate_pass,PASS);
-				if(compP==0){
-					printf("\n Acceso Concedido...");
-					printf("\n");
-					system("pause");
-					goto menu_crear;
-				}else{
-					printf("\n Acceso Denegado!");
-					printf("\n");
-					system("pause");
-				}
-			}while(comp!=0);
-			menu_crear:
-			system("cls");
-			printf("\n BORRAR REGISTROS");
-			printf("\n 1. Usuarios");
-			printf("\n 2. Clientes");
-			printf("\n 3. Inventario");
-			printf("\n 4. Regresar al Men√∫ Principal");
-			printf("\n Opcion: ");
-			scanf("%d",&i);
-			switch(i){
-				case 1: crear_usuarios();
-						goto menu_crear;
-				case 2: crear_clientes();
-						goto menu_crear;
-				case 3: crear_productos();
-						goto menu_crear;
-				case 4: goto admin_menu;
-						break;
-				default: goto menu_crear;
-			}
-			system("pause");
-		case 6:
-			printf("Cerrando Sesi√≥n...\n");
+		case 3:
+			printf("Cerrando SesiÛn...\n");
 			system("pause");
 			goto init;
-		case 7:
+		case 4:
 			system("cls");
-			printf("\n ¬øRealmente desea Salir del Programa?");
+			printf("\n øRealmente desea Salir del Programa?");
 			printf("\n 1. SI");
 			printf("\n 2. NO");
 			do{
-				printf("\n Opci√≥n: ");
+				printf("\n OpciÛn: ");
 				scanf("%d",&si);
 				if(si==1){
 				printf("Saliendo del Programa...\n");
@@ -956,7 +611,7 @@ int main(int argc,char* argv[]){
 					system("pause");
 					goto admin_menu;
 				}else{
-					printf("\n Opci√≥n Inv√°lida!");
+					printf("\n OpciÛn Inv·lida!");
 				}
 			}while(si>=1 && si<3);
 		default: goto admin_menu;
@@ -966,67 +621,27 @@ int main(int argc,char* argv[]){
 	strcpy(user,validate_user);
 	system("cls");
 	printf("\n Bienvenido!");
-	printf("\n 1. Sistema de Facturas");
-	printf("\n 2. Registrar Cliente");
-	printf("\n 3. Consultar Producto");
-	printf("\n 4. Cerrar Sesi√≥n");
-	printf("\n 5. Salir");
+	printf("\n 1. Consultar Producto");
+	printf("\n 2. Cerrar SesiÛn");
+	printf("\n 3. Salir");
 	printf("\n");
-	printf("\n Opcion: ");
+	printf("\n OpciÛn: ");
 	scanf("%d",&j);
 	switch(j){
-		case 1: {
-				system("cls");
-			    FILE *arch;
-			    arch=fopen("base_de_datos//facturas.dat","wb");
-			    
-			    factura fact;
-			    
-			    if (arch==NULL)
-					exit(1);
-				fwrite(&fact, sizeof(factura), 1, arch);
-					
-			    fact.num_fact=fact.num_fact+1;
-			    printf("\n---------------------------------------------------");
-			    printf("\n              ****TIENDA****");
-			    printf("\n                LA VENTURA");
-			    printf("\n             BABHOYO-ECUADOR");
-			    printf("\n            FACTURA N¬∞ %04d",fact.num_fact);
-			    printf("\n---------------------------------------------------");	
-				printf("\n Usuario: %s",user);
-				printf("%s",output);
-			    printf("\n---------------------------------------------------");
-			   	cliente_factura();
-				printf("\n---------------------------------------------------");
-				producto_factura();
-				printf("\n---------------------------------------------------");
-				printf("\n             Muchas Gracias Por Su Compra");
-				printf("\n                   Vuelva Pronto");
-				printf("\n---------------------------------------------------");
-				printf("\n                    ELIAS CANDO");
-				printf("\n                       2021");
-				fclose(arch);
-				goto user_menu;
-				break;
-				}
-		case 2: registrar_clientes();
+		case 1: consultar_productos();
 				system("pause");
 				goto user_menu;
 				break;
-		case 3: consultar_productos();
-				system("pause");
-				goto user_menu;
-				break;
-		case 4:printf("Cerrando Sesi√≥n...\n");
+		case 2:printf("Cerrando SesiÛn...\n");
 				system("pause");
 				goto init;
-		case 5:
+		case 3:
 			system("cls");
-			printf("\n ¬øRealmente desea Salir del Programa?");
+			printf("\n øRealmente desea Salir del Programa?");
 			printf("\n 1. SI");
 			printf("\n 2. NO");
 			do{
-				printf("\n Opci√≥n: ");
+				printf("\n OpciÛn: ");
 				scanf("%d",&si);
 				if(si==1){
 				printf("Saliendo del Programa...\n");
@@ -1036,13 +651,12 @@ int main(int argc,char* argv[]){
 					system("pause");
 					goto user_menu;
 				}else{
-					printf("\n Opci√≥n Inv√°lida!");
+					printf("\n OpciÛn Inv·lida!");
 				}
 			}while(si>=1 && si<3);
 		default: goto user_menu;
 	}
 	system("pause");
-	
 	
 	getch();
 }
