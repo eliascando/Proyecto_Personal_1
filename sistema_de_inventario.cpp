@@ -30,9 +30,6 @@ typedef struct{
 }product;
 
 //============FUNCIONES=======================================================
-void lineas(){
-	printf("\n---------------------------------------------------");
-}
 void asterisco(char frase[]){												
     int i=0;
     cout.flush();
@@ -127,7 +124,7 @@ void registrar_usuarios(){
 	printf("\n Ingrese Nombre de Usuario: ");
 	gets(usua.user_NAME);
 	fflush(stdin);
-	printf("\n Registre ContraseÃ±a del Usuario: ");
+	printf("\n Registre Contraseña del Usuario: ");
 	gets(usua.user_pass);
 	fflush(stdin);
 	
@@ -145,7 +142,6 @@ void consultar_usuarios(){
 		exit(1);
 
     user_system usua;
-    
     fread(&usua, sizeof(user_system), 1, arch);
     	system("cls");
     while(!feof(arch)){
@@ -154,13 +150,12 @@ void consultar_usuarios(){
 		printf("\n Nombre y Apellido: %s",usua.user_name);
 		printf("\n ID del Usuario: %d",usua.user_id);
 		printf("\n Usuario: %s",usua.user_NAME);
-		printf("\n ContraseÃ±a del Usuario: %s",usua.user_pass);
+		printf("\n Contraseña del Usuario: %s",usua.user_pass);
 		printf("\n----------------------------------------------");
 		printf("\n");
         fread(&usua, sizeof(user_system), 1, arch);
         c++;
     }
-    
     fclose(arch);
 	printf("\n");
     system("pause");
@@ -227,7 +222,6 @@ void eliminar_usuario() {
     while (!feof(arch)) {
         if (ID == usua.user_id) {
             existe = 1;
-            printf("\nUsuario eliminado: %s", usua.user_NAME);
         } else {
             fwrite(&usua, sizeof(user_system), 1, temp);
         }
@@ -235,14 +229,30 @@ void eliminar_usuario() {
     }
     if (existe == 0) {
         printf("\nNo existe Usuario!");
+    } else {
+    	printf("\nUsuario: %s", usua.user_NAME);
+        printf("\n¿Está seguro que desea eliminar el usuario? (S/N): ");
+        char confirm;
+        fflush(stdin);
+        scanf("%c", &confirm);
+        if (confirm == 'S' || confirm == 's') {
+            fclose(arch);
+            fclose(temp);
+            remove("base_de_datos//usuarios.dat");
+            rename("base_de_datos//temp.dat", "base_de_datos//usuarios.dat");
+            printf("\nUsuario eliminado exitosamente.");
+        } else {
+        	printf("\nOperación cancelada...");
+            printf("\nNo se eliminó el usuario.");
+            fclose(arch);
+            fclose(temp);
+            remove("base_de_datos//temp.dat");
+        }
     }
-    fclose(arch);
-    fclose(temp);
-    remove("base_de_datos//usuarios.dat");
-    rename("base_de_datos//temp.dat", "base_de_datos//usuarios.dat");
     printf("\n");
     system("pause");
 }
+
 
 
 void registrar_productos(){
@@ -298,11 +308,9 @@ void ingreso_stock(){
            total=pr.cost*pr.stock;
            printf("\n ***%s***",pr.description);
            printf("\n-------------------------------------");
-           printf("\n Stock:*************** %d",pr.stock);
-		   printf("\n Total Inventario:*** $%.2f",total);
+           printf("\n Stock:************** %d",pr.stock);
 		   printf("\n-------------------------------------");
 		   printf("\n");
-		   system("pause");
            printf("\n Cantidad a Ingresar: ");
            scanf("%d",&ingreso);
            pr.stock=pr.stock+ingreso;
@@ -313,7 +321,7 @@ void ingreso_stock(){
            fflush(stdin);
 		   printf("\n ***%s***",pr.description);
            printf("\n-------------------------------------");
-           printf("\n Stock Actual:******** %d",pr.stock);
+           printf("\n Stock Actual:*******  %d",pr.stock);
 		   printf("\n Costo Total:******** $%.2f",total);
 		   printf("\n Precio Total:******* $%.2f",p_total);
 		   printf("\n-------------------------------------");
@@ -322,14 +330,14 @@ void ingreso_stock(){
            int pos=ftell(arch)-sizeof(product);
            fseek(arch,pos,SEEK_SET);
            fwrite(&pr, sizeof(product), 1, arch);
-           printf("\n OperaciÃ³n Realizada Exitosamente!");
+           printf("\n Operación Realizada Exitosamente!");
            existe=1;
            break;
         }
         fread(&pr, sizeof(product), 1, arch);
     }
     if (existe==0)
-        printf("No existe Usuario!");
+        printf("No existe Producto!");
         
     fclose(arch);
 	printf("\n");
@@ -355,20 +363,25 @@ void lista_productos(){
 	   printf("\n-------------------------------------------");
 	   printf("\n Descripción: %s",pr.description);
 	   printf("\n Código: %d",pr.code);
-       printf("\n Stock:*************** %d",pr.stock);
+       printf("\n Stock:**************  %d",pr.stock);
 	   printf("\n Costo Unitario:***** $%.2f",pr.cost);
 	   printf("\n Precio Unitario:**** $%.2f",pr.price);
-	   printf("\n Costo Total:*********$%.2f",c_total);
-	   printf("\n Precio Total:********$%.2f",p_total);
+	   printf("\n Costo Total:******** $%.2f",c_total);
+	   printf("\n Precio Total:******* $%.2f",p_total);
 	   printf("\n-------------------------------------------");
 	   printf("\n");
 	   cti=cti+c_total;
 	   pti=pti+p_total;
        fread(&pr, sizeof(product), 1, arch);  	
 	}
+		if(cti == 0){
+			printf("\n No hay productos registrados!");
+			printf("\n\n");
+		}
 	   printf("\n===========================================");
 	   printf("\n COSTO TOTAL DEL INVENTARIO:***** $%.2f",cti);
 	   printf("\n PRECIO TOTAL DEL INVENTARIO:**** $%.2f",pti);
+	   printf("\n UTILIDADES TOTALES:************* $%.2f",pti-cti);
 	   printf("\n===========================================");
     
     fclose(arch);
@@ -398,7 +411,7 @@ void consultar_productos(){
 		   printf("\n-------------------------------------------");
 		   printf("\n Descripción: %s",pr.description);
 		   printf("\n Código: %d",pr.code);
-           printf("\n Stock:*************** %d",pr.stock);
+           printf("\n Stock:**************  %d",pr.stock);
 		   printf("\n Precio:************* $%.2f",pr.price);
 		   printf("\n-------------------------------------------");
 		   existe=1;
@@ -440,7 +453,7 @@ void actualizar_precios(){
            printf("\n Nuevo Precio: ");
            scanf("%f",&pr.price);
            fflush(stdin);
-           int pos=ftell(arch)-sizeof(user_system);
+           int pos=ftell(arch)-sizeof(product);
            fseek(arch,pos,SEEK_SET);
            fwrite(&pr, sizeof(product), 1, arch);
            printf("\n Cambio de Precio Exitoso!");
